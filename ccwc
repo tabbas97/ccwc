@@ -3,15 +3,61 @@
 def count_bytetype(cont):
     return len(cont)
 
+def count_chars(cont):
+    return len(cont.decode("utf-8"))
+
+def count_words(cont):
+    return len(cont.split())
+
+def count_lines(cont):
+    return len(cont.splitlines())
+
 def read_bytes(filename):
     with open(filename, "rb") as f:
         return f.read()
     
 if __name__ == "__main__":
+
+    # Check if the input stream is empty
     import sys
-    if len(sys.argv) != 3:
-        print("Usage: {} FILE".format(sys.argv[0]))
-        sys.exit(1)
-    filename = sys.argv[2]
-    content = read_bytes(filename)
-    print("{} {}".format(count_bytetype(content), filename))
+    content = sys.stdin.read() if not sys.stdin.isatty() else None
+
+    if content:
+        print("{} {} {}".format(count_lines(content), count_words(content), count_bytetype(content)))
+    else:
+        import argparse
+
+        parser = argparse.ArgumentParser(description="Count the number of bytes in a file")
+        parser.add_argument("-w", "--words", help="Count the number of words in the file", action="store_true")
+        parser.add_argument("-l", "--lines", help="Count the number of lines in the file", action="store_true")
+        parser.add_argument("-c", "--bytes", help="Count the number of bytes in the file", action="store_true")
+        parser.add_argument("-m", "--chars", help="Count the number of characters in the file", action="store_true")
+        parser.add_argument("-a", "--all", help="Count all of the above", action="store_true")
+        parser.add_argument("filename", help="The file to count the bytes of")
+    
+        args = parser.parse_args()
+
+        if not (args.words or args.lines or args.bytes or args.chars or args.all):
+            args.all = True
+
+        if args.all:
+            args.words = True
+            args.lines = True
+            args.bytes = True
+            args.chars = True
+
+        filename = args.filename
+        content = read_bytes(filename)
+
+        if args.all:
+            print("{} {} {}".format(count_lines(content), count_words(content), count_bytetype(content)))
+
+        if args.words:
+            print("{} {}".format(count_words(content), filename))
+        elif args.lines:
+            print("{} {}".format(count_lines(content), filename))
+        elif args.bytes:
+            print("{} {}".format(count_bytetype(content), filename))
+        elif args.chars:
+            print("{} {}".format(count_chars(content), filename))
+            
