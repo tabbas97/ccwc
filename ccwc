@@ -1,0 +1,17 @@
+#!/usr/bin/env python3
+
+def count_bytetype(cont):
+    return len(cont)
+
+def read_bytes(filename):
+    with open(filename, "rb") as f:
+        return f.read()
+    
+if __name__ == "__main__":
+    import sys
+    if len(sys.argv) != 3:
+        print("Usage: {} FILE".format(sys.argv[0]))
+        sys.exit(1)
+    filename = sys.argv[2]
+    content = read_bytes(filename)
+    print("{} {}".format(count_bytetype(content), filename))
